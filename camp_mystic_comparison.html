@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<style>body{background-color:white;}</style>
+
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Camp Mystic - Before and After Flooding Comparison</title>
+  <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      
+      .container {
+        max-width: 900px;
+        width: 100%;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        overflow: hidden;
+      }
+      
+      .header {
+        background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+        color: white;
+        padding: 20px;
+        text-align: center;
+      }
+      
+      .header h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      }
+      
+      .header p {
+        font-size: 1.1em;
+        opacity: 0.9;
+      }
+      
+      .slider-container {
+        position: relative;
+        width: 100%;
+        height: 500px;
+        overflow: hidden;
+        background: #f8f9fa;
+      }
+      
+      .before-image, .after-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: clip-path 0.1s ease;
+      }
+      
+      .after-image {
+        clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+      }
+      
+      .slider-handle {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(to bottom, #ff0000, #cc0000);
+        cursor: ew-resize;
+        transform: translateX(-50%);
+        z-index: 10;
+        box-shadow: 0 0 10px rgba(255,0,0,0.5);
+      }
+      
+      .slider-handle::after {
+        content: '↔';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #ff0000, #cc0000);
+        border: 4px solid white;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: ew-resize;
+      }
+      
+      .slider-handle:hover::after {
+        transform: translate(-50%, -50%) scale(1.1);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+      }
+      
+      .labels {
+        display: flex;
+        justify-content: space-between;
+        padding: 20px;
+        background: #f8f9fa;
+        border-top: 1px solid #e9ecef;
+      }
+      
+      .label {
+        display: flex;
+        align-items: center;
+        font-weight: bold;
+        color: #495057;
+        font-size: 1.1em;
+      }
+      
+      .label::before {
+        content: '';
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        margin-right: 10px;
+      }
+      
+      .label.before::before {
+        background: #28a745;
+      }
+      
+      .label.after::before {
+        background: #dc3545;
+      }
+      
+      .instructions {
+        background: #e3f2fd;
+        padding: 15px;
+        text-align: center;
+        color: #1976d2;
+        font-size: 0.9em;
+        border-top: 1px solid #bbdefb;
+      }
+      
+      .footer {
+        background: #343a40;
+        color: white;
+        padding: 15px;
+        text-align: center;
+        font-size: 0.9em;
+      }
+      
+      @media (max-width: 768px) {
+        .header h1 {
+          font-size: 2em;
+        }
+        
+        .slider-container {
+          height: 300px;
+        }
+        
+        .labels {
+          flex-direction: column;
+          gap: 10px;
+          text-align: center;
+        }
+      }
+    </style>
+</head>
+<html>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Camp Mystic</h1>
+        <p>Before and After Flooding Comparison - July 2025</p>
+      </div>
+      <div class="slider-container">
+        <img src="before_processed.jpg" class="before-image" alt="Before flooding"/>
+        <img src="after_processed.jpg" class="after-image" alt="After flooding"/>
+        <div class="slider-handle"></div>
+      </div>
+      <div class="labels">
+        <div class="label before">Before: Normal Conditions</div>
+        <div class="label after">After: Flood Damage</div>
+      </div>
+      <div class="instructions">💡 拖拽红色滑块或点击图片任意位置来查看对比效果</div>
+      <div class="footer">© 2025 Camp Mystic Flood Analysis | Interactive Comparison Tool</div>
+    </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const container = document.querySelector('.slider-container');
+        const handle = document.querySelector('.slider-handle');
+        const afterImage = document.querySelector('.after-image');
+        let isDragging = false;
+        
+        function updateSlider(x) {
+          const rect = container.getBoundingClientRect();
+          const percent = Math.max(0, Math.min(100, (x - rect.left) / rect.width * 100));
+          handle.style.left = percent + '%';
+          afterImage.style.clipPath = `polygon(${percent}% 0, 100% 0, 100% 100%, ${percent}% 100%)`;
+        }
+        
+        // 鼠标事件
+        handle.addEventListener('mousedown', (e) =&gt; {
+          isDragging = true;
+          e.preventDefault();
+        });
+        
+        document.addEventListener('mousemove', (e) =&gt; {
+          if (isDragging) {
+            updateSlider(e.clientX);
+          }
+        });
+        
+        document.addEventListener('mouseup', () =&gt; {
+          isDragging = false;
+        });
+        
+        // 点击事件
+        container.addEventListener('click', (e) =&gt; {
+          if (!isDragging) {
+            updateSlider(e.clientX);
+          }
+        });
+        
+        // 触摸事件（移动设备支持）
+        handle.addEventListener('touchstart', (e) =&gt; {
+          isDragging = true;
+          e.preventDefault();
+        });
+        
+        document.addEventListener('touchmove', (e) =&gt; {
+          if (isDragging &amp;&amp; e.touches[0]) {
+            updateSlider(e.touches[0].clientX);
+          }
+        });
+        
+        document.addEventListener('touchend', () =&gt; {
+          isDragging = false;
+        });
+        
+        // 键盘支持
+        document.addEventListener('keydown', (e) =&gt; {
+          const currentPercent = parseFloat(handle.style.left) || 50;
+          let newPercent = currentPercent;
+          
+          if (e.key === 'ArrowLeft') {
+            newPercent = Math.max(0, currentPercent - 5);
+          } else if (e.key === 'ArrowRight') {
+            newPercent = Math.min(100, currentPercent + 5);
+          }
+          
+          if (newPercent !== currentPercent) {
+            handle.style.left = newPercent + '%';
+            afterImage.style.clipPath = `polygon(${newPercent}% 0, 100% 0, 100% 100%, ${newPercent}% 100%)`;
+          }
+        });
+        
+        console.log('交互式图片对比工具已加载完成！');
+      });
+    </script>
+  </body>
+</html>
+</html>
